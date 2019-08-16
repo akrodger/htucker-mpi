@@ -1,5 +1,5 @@
-# htucker-mpi
-A high performance computing oriented parallel implementation of the Hierarchical Tucker tensor decomposition toolbox. A closely related MATLAB version can be found at https://anchp.epfl.ch/index-html/software/htucker/ .
+# htucker-mpi Fokker-Planck 6 Dimensional Solver
+An application of the htucker-mpi library to solving an advection-diffusion problem.
 
 # Dependencies:
 - LAPACK, the fortran linear algebra library
@@ -9,22 +9,25 @@ A high performance computing oriented parallel implementation of the Hierarchica
 - MPI, distributed memory parallelism
 - C++ Compiler
 
-# Library Usage
-The most portable way to use this code is to ensure that all dependencies satisfied, and then compile. After that, simply place the file htucker-mpi.a to a location where you keep accessible linked libraries. Linking all dependencies is then accomplished by appending
+# Deemo Usage
+The most portable way to use this code is to ensure that all dependencies satisfied, and then compile. After that, there is will be an executable named 
     
-    -llapack -llapacke -lblas -lm -l/[location of libs for linking]/htucker-mpi.a
+    fp6dDemo.x
 
-to the linking section of the C++ compilation and linking commands.
+in the same directory as the makefile. To run the demo, use the command
+
+    mpirun -np 11 ./fp6dDemo.x  [gridSize] [maxRank] [numIteration] [finalTime]
+
+in your terminal. Please note that a total of 11 MPI threads are used, so it is best to ensure that you have at least 11 logical processors on your computer.
+
+Notes on command line arguments:
+
+    gridSize:     The number of interior points on the side of a high dimensional box.
+    maxRank:      The maximum rank the HTucker truncaiton algorithm truncates to.
+    numIteration: The number of time steps.
+    finalTime:    The end time of the PDE solver.
+
+
 
 # Compiling
-Make sure all your dependencies are installed. The ones used by default in this library are listed with the following names in the Ubuntu 19.04 repositories.
-
-- libgomp1
-- liblapack3
-- liblapacke
-- libblas3
-- libgslcblas0
-- openmpi-bin
-- g++
-
-If these are installed, then compilation of the linkable library htucker-mpi.a should easily completed by running make in the same directory as this README file.
+Linking is handled automatically assuming that you have the dependencies suggested by the master branch readme. Just run make in the same directory as the makefile.
