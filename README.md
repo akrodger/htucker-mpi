@@ -12,7 +12,7 @@ A high performance computing oriented parallel implementation of the Hierarchica
 # Library Usage
 The most portable way to use this code is to ensure that all dependencies satisfied, and then compile. After that, simply place the file htucker-mpi.a to a location where you keep accessible linked libraries. Linking all dependencies is then accomplished by appending
     
-    -llapack -llapacke -lblas -lm -l/[location of libs for linking]/htucker-mpi.a
+   -L/[location of libs for linking] -lHtuckerMpi -llapack -llapacke -lblas -lm
 
 to the linking section of the C++ compilation and linking commands.
 
@@ -27,4 +27,4 @@ Make sure all your dependencies are installed. The ones used by default in this 
 - openmpi-bin
 - g++
 
-If these are installed, then compilation of the linkable library htucker-mpi.a should easily completed by running make in the same directory as this README file.
+If these are installed, then compilation of the linkable library libHtuckerMpi.a should easily completed by running make in the same directory as this README file.

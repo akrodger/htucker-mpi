@@ -79,10 +79,11 @@ public:
 	//If so, matrices are generated from the leaves and then applies to x.
 	//on all other nodes, multiplication is carried out via a kronecker product
 	HTuckerMPI linOpApply(HTuckerMPI& x);
-	//This algorithm takes the frames from the tree of the argument x
-	//and then projects this HTucker tensor onto that tree. The algorithm
-	//works by computing a sequence of inner products
-	HTuckerMPI projectOnTree(HTuckerMPI& x);
+	//Sums all the entries of an HTucker tensor together, except index k
+	//which satisfies 0<=k && k<=this->indexLength.size() . This operation
+	//is analogous to computing the maginal probability density of a
+	//vector-valued random variable.
+	Matrix contractedVector(lapack_int k);
 	//Get the thread ID of this node:
 	int getThreadID() const;
 	//Get the i^th index value of this node's tree index
