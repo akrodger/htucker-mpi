@@ -85,4 +85,4 @@ DisTree.o:
 	 $(DISTREE_LOC)/DisTree.cpp -o DisTree.o
 
 clean:
-	rm *.o *.a
+	rm *.o *.a *.x
