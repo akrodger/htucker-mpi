@@ -1272,6 +1272,118 @@ HTuckerMPI HTuckerMPI::linOpApply(HTuckerMPI& x){
 	return p;
 }
 
+
+Matrix HTuckerMPI::contractedVector(lapack_int k){
+	Matrix R, M_t, M_l, M_r;
+	Tensor T;
+	std::valarray<int> sendIntBuff;
+	std::valarray<int> recvIntBuff;
+	std::valarray<int> sendIndexBuff;
+	std::valarray<int> recvIndexBuff;
+	std::valarray<long> sendLongBuff;
+	std::valarray<long> recvLongBuff;
+	std::valarray<double> sendDoubleBuff;
+	std::valarray<double> recvDoubleBuff;
+	std::valarray<lapack_int> sizeVector;
+	MPI_Status stat;
+	int tag=1;
+	MPI_Barrier(MPI_COMM_WORLD);
+	if(this->n.index.size() == 1){//if this is a leaf
+		if(this->getTreeIndex(0) == k){
+			M_t = this->n.D;
+		}else{
+			R = Matrix(1,this->n.D.getIndexLength(0),'1');
+			M_t = R.modalProd(0,this->n.D);
+			R = Matrix();
+		}
+		//Send M_t to parent
+		//tell parent how much memory to accept
+		sendLongBuff.resize(2);
+		sendLongBuff[0] = M_t.getIndexLength(0);
+		sendLongBuff[1] = M_t.getIndexLength(1);
+		//Now load the components of this node's matrix into the double buffer
+		sendDoubleBuff.resize(M_t.getNumComponents());
+		sendDoubleBuff = M_t.components;
+		//Send the memory size as an MPI message
+		MPI_Send(	&(sendLongBuff[0]),
+					2, MPI_LONG, this->n.p_id, tag, MPI_COMM_WORLD);
+		//Now send the double data to the parent node
+		MPI_Send(	&(sendDoubleBuff[0]),
+					(int) sendDoubleBuff.size(),
+					MPI_DOUBLE, this->n.p_id, tag, MPI_COMM_WORLD);
+	}else if(this->n.t_id != 0){//if this is interior
+		//set of message to recieve memory buffer size
+		recvLongBuff.resize(2);
+		//First recieve from left child
+		MPI_Recv(	&(recvLongBuff[0]),
+					2, MPI_LONG, this->n.l_id, tag, MPI_COMM_WORLD, &stat);
+		recvDoubleBuff.resize(recvLongBuff[0] * recvLongBuff[1]);
+		MPI_Recv(	&(recvDoubleBuff[0]),
+					(int) recvDoubleBuff.size(),
+					MPI_DOUBLE, this->n.l_id, tag, MPI_COMM_WORLD, &stat);
+		M_l = Matrix(recvLongBuff[0], recvLongBuff[1]);
+		M_l.components = recvDoubleBuff;
+		//Second recieve from right child
+		MPI_Recv(	&(recvLongBuff[0]),
+					2, MPI_LONG, this->n.r_id, tag, MPI_COMM_WORLD, &stat);
+		recvDoubleBuff.resize(recvLongBuff[0] * recvLongBuff[1]);
+		MPI_Recv(	&(recvDoubleBuff[0]),
+					(int) recvDoubleBuff.size(),
+					MPI_DOUBLE, this->n.r_id, tag, MPI_COMM_WORLD, &stat);
+		M_r = Matrix(recvLongBuff[0], recvLongBuff[1]);
+		M_r.components = recvDoubleBuff;
+		
+		T = M_l.modalProd(0, this->n.D);
+		T = M_r.modalProd(1, T);
+		M_t = Matrix(T.getIndexLength(0)*T.getIndexLength(1),
+							T.getIndexLength(2));
+		M_t.components = T.components;
+
+		//Send M_t to parent
+		//tell parent how much memory to accept
+		sendLongBuff.resize(2);
+		sendLongBuff[0] = M_t.getIndexLength(0);
+		sendLongBuff[1] = M_t.getIndexLength(1);
+		//Now load the components of this node's matrix into the double buffer
+		sendDoubleBuff.resize(M_t.getNumComponents());
+		sendDoubleBuff = M_t.components;
+		//Send the memory size as an MPI message
+		MPI_Send(	&(sendLongBuff[0]),
+					2, MPI_LONG, this->n.p_id, tag, MPI_COMM_WORLD);
+		//Now send the double data to the parent node
+		MPI_Send(	&(sendDoubleBuff[0]),
+					(int) sendDoubleBuff.size(),
+					MPI_DOUBLE, this->n.p_id, tag, MPI_COMM_WORLD);
+	}else{//otherwise its root
+		//set of message to recieve memory buffer size
+		recvLongBuff.resize(2);
+		//First recieve from left child
+		MPI_Recv(	&(recvLongBuff[0]),
+					2, MPI_LONG, this->n.l_id, tag, MPI_COMM_WORLD, &stat);
+		recvDoubleBuff.resize(recvLongBuff[0] * recvLongBuff[1]);
+		MPI_Recv(	&(recvDoubleBuff[0]),
+					(int) recvDoubleBuff.size(),
+					MPI_DOUBLE, this->n.l_id, tag, MPI_COMM_WORLD, &stat);
+		M_l = Matrix(recvLongBuff[0], recvLongBuff[1]);
+		M_l.components = recvDoubleBuff;
+		//Second recieve from right child
+		MPI_Recv(	&(recvLongBuff[0]),
+					2, MPI_LONG, this->n.r_id, tag, MPI_COMM_WORLD, &stat);
+		recvDoubleBuff.resize(recvLongBuff[0] * recvLongBuff[1]);
+		MPI_Recv(	&(recvDoubleBuff[0]),
+					(int) recvDoubleBuff.size(),
+					MPI_DOUBLE, this->n.r_id, tag, MPI_COMM_WORLD, &stat);
+		M_r = Matrix(recvLongBuff[0], recvLongBuff[1]);
+		M_r.components = recvDoubleBuff;
+
+		T = M_l.modalProd(0, this->n.D);
+		T = M_r.modalProd(1, T);
+		R = Matrix(T.getNumComponents(),1);
+		R.components = T.components;
+	}
+	return R;
+}
+
 int HTuckerMPI::getThreadID() const{
 	return this->n.t_id;
 }

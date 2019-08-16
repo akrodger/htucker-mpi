@@ -47,34 +47,41 @@ HT_DEPS=$(TENSOR_LOC)/Tensor.cpp\
  $(DISTREE_LOC)/DisTree.cpp $(DISTREE_LOC)/DisTreeNode.cpp
 
 
-default: htucker-mpi.a
+default: fp6d_demo.x
 
+fp6d_demo.x: libHtuckerMpi.a fp6d/AB2_FokkerPlanck6d.cpp\
+             fp6d/BoundaryCondition/BoundaryCondition.cpp
+	$(MPICXX) $(CFLAGS) $(OMP)\
+	 fp6d/AB2_FokkerPlanck6d.cpp\
+	 fp6d/BoundaryCondition/BoundaryCondition.cpp\
+	 -L. -lHtuckerMpi $(LAPACK) $(LAPACKE) $(BLAS) -lm  -o fp6dDemo.x
+	 
 
-htucker-mpi.a: $(HT_DEPS) Tensor.o Matrix.o HTuckerMPI.o DisTreeNode.o DisTree.o
-	ar rcs htucker-mpi.a\
+libHtuckerMpi.a: $(HT_DEPS) Tensor.o Matrix.o HTuckerMPI.o DisTreeNode.o DisTree.o
+	ar rcs libHtuckerMpi.a\
 	 Tensor.o\
 	 Matrix.o\
 	 HTuckerMPI.o\
 	 DisTree.o DisTreeNode.o
 
 Tensor.o:
-	$(MPICXX) -c $(CFLAGS) $(OMP)\
+	$(MPICXX) -static -c -fPIC $(CFLAGS) $(OMP)\
 	 $(TENSOR_LOC)/Tensor.cpp -o Tensor.o
 
 Matrix.o: Tensor.o
-	$(MPICXX) -c -fPIC $(CFLAGS) $(OMP)\
+	$(MPICXX) -static -c -fPIC $(CFLAGS) $(OMP)\
 	 $(MATRIX_LOC)/Matrix.cpp -o Matrix.o
 
 HTuckerMPI.o: DisTreeNode.o DisTree.o
-	$(MPICXX) -c -fPIC $(CFLAGS) $(OMP)\
+	$(MPICXX) -static -c -fPIC $(CFLAGS) $(OMP)\
 	 $(HTUCKER_LOC)/HTuckerMPI.cpp -o HTuckerMPI.o
 
 DisTreeNode.o:
-	$(MPICXX) -c -fPIC $(CFLAGS) $(OMP)\
+	$(MPICXX) -static -c -fPIC $(CFLAGS) $(OMP)\
 	 $(DISTREE_LOC)/DisTreeNode.cpp -o DisTreeNode.o
 
 DisTree.o:
-	$(MPICXX) -c -fPIC $(CFLAGS) $(OMP)\
+	$(MPICXX) -static -c -fPIC $(CFLAGS) $(OMP)\
 	 $(DISTREE_LOC)/DisTree.cpp -o DisTree.o
 
 clean:
