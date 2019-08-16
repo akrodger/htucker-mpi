@@ -1,6 +1,6 @@
 /*
- * C Source file Template by Bram Rodgers.
- * Original Draft Dated: 25, Feb 2018
+ * Parallel Distrubuted Tree Structure implementation by Bram Rodgers.
+ * Prior to LGPL Draft Dated: 3, Sept 2018
  */
 
 /*

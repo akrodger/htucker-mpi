@@ -2,8 +2,8 @@
 #define MATRIX_H
 
 /*
- * Object Declaration for Matrix (Derived from Tensor) by Bram Rodgers.
- * Original Draft Dated: 7, May 2018
+ * Dense Matrix Object header by Bram Rodgers.
+ * Prior to LGPL Draft Dated: 3, Sept 2018
  */
 
 /*

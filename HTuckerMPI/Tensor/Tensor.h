@@ -2,8 +2,8 @@
 #define TENSOR_H
 
 /*
- * Object Declaration for Tensor by Bram Rodgers.
- * Original Draft Dated: 6, Feb 2018
+ * Dense Tensor Object header by Bram Rodgers.
+ * Prior to LGPL Draft Dated: 3, Sept 2018
  */
 
 /*

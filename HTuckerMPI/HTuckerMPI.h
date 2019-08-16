@@ -2,10 +2,9 @@
 #define HTUCKERMPI_H
 
 /*
- * C Header file Template by Bram Rodgers.
- * Original Draft Dated: 25, Feb 2018
+ * HTucker MPI Parallel header by Bram Rodgers.
+ * Prior to LGPL Draft Dated: 3, Sept 2018
  */
-
 /*
  * Header File Body:
  */

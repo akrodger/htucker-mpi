@@ -18,6 +18,7 @@ to the linking section of the C++ compilation and linking commands.
 
 # Compiling
 Make sure all your dependencies are installed. The ones used by default in this library are listed with the following names in the Ubuntu 19.04 repositories.
+
 -libgomp1
 -liblapack3
 -liblapacke
@@ -25,4 +26,5 @@ Make sure all your dependencies are installed. The ones used by default in this 
 -libgslcblas0
 -openmpi-bin
 -g++
+
 If these are installed, then compilation of the linkable library htucker-mpi.a should easily completed by running make in the same directory as this README file.

@@ -2,8 +2,8 @@
 #define DISTREENODE_H
 
 /*
- * C Header file Template by Bram Rodgers.
- * Original Draft Dated: 25, Feb 2018
+ * Parallel Distrubuted Tree Structure header by Bram Rodgers.
+ * Prior to LGPL Draft Dated: 3, Sept 2018
  */
 
 /*
